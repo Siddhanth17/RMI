@@ -1,16 +1,29 @@
 package rmi;
 
-import java.rmiserver.UnicastRemoteObject;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
+import java.util.List;
 
-public class Chatimpl extends UnicastRemoteObject implements ChatInterface{
-    List<ClientCallback> clients;
+public class Chatimpl extends UnicastRemoteObject implements ChatInterface {
+    private final List<ClientCallback> clients;
 
-    public class Chatimpl() throws RemoteException{
+    public Chatimpl() throws RemoteException {
+        super();
         clients = new ArrayList<>();
     }
 
-    public void registerClient(ClientCallback client){
+    @Override
+    public String registerClient(ClientCallback client) throws RemoteException {
         clients.add(client);
         System.out.println("Client registered: " + client);
+        return "Registered";
+    }
+
+    @Override
+    public void sendMessage(String message) throws RemoteException {
+        for (ClientCallback client : clients) {
+            client.receiveMessage(message);
+        }
     }
 }
